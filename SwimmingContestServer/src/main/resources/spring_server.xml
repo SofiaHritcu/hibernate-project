@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <util:properties id="jdbcProps" location="classpath:swimmingContestServer.properties"/>
+    <bean id="userRepo" class="swimmingContest.persistence.repository.UserJdbcRepository">
+        <constructor-arg ref="jdbcProps"/>
+    </bean>
+    <bean id="participantRepo" class="swimmingContest.persistence.repository.ParticipantJdbcRepository">
+        <constructor-arg ref="jdbcProps"/>
+    </bean>
+    <bean id="swimmingEventRepo" class="swimmingContest.persistence.repository.SwimmingEventJdbcRepository">
+        <constructor-arg ref="jdbcProps"/>
+    </bean>
+    <bean id="signUpRepo" class="swimmingContest.persistence.repository.SignUpJdbcRepository">
+        <constructor-arg ref="jdbcProps"/>
+    </bean>
+    <bean id="swimmingContestService" class="swimmingContest.server.SwimmingContestServerImpl">
+        <constructor-arg ref="userRepo"/>
+        <constructor-arg ref="participantRepo"/>
+        <constructor-arg ref="swimmingEventRepo"/>
+        <constructor-arg ref="signUpRepo"/>
+    </bean>
+
+    <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
+
+        <property name="serviceName" value="SwimmingContest"/>
+        <property name="service" ref="swimmingContestService"/>
+        <property name="serviceInterface" value="swimmingContest.services.ISwimmingContestServices"/>
+        <property name="servicePort" value="1099"/>
+    </bean>
+</beans>
